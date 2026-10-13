@@ -1,5 +1,12 @@
-# Dependencies
+# Screenshots & Media Artifacts
 docs/
+docs/screenshots/
+screenshots/
+*.png
+*.jpg
+*.jpeg
+
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
