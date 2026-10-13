@@ -8,6 +8,13 @@ import mongoSanitize from 'express-mongo-sanitize';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 
+import authRoutes from './routes/authRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+
 dotenv.config();
 
 const app = express();
@@ -26,7 +33,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
       if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
         callback(null, true);
       } else {
@@ -45,7 +51,7 @@ if (process.env.NODE_ENV !== 'test') {
 // Cookie Parser
 app.use(cookieParser());
 
-// Special Raw Body parsing for Razorpay Webhook signature verification
+// Raw Body parser for Razorpay Webhook signature verification
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 
 // Standard JSON & URL-Encoded parsers
@@ -57,11 +63,19 @@ app.use(mongoSanitize());
 
 // Rate Limiting
 const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 mins
-  max: 300,
+  windowMs: 15 * 60 * 1000,
+  max: 500,
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 app.use('/api', generalLimiter);
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health Check Endpoint (Render requirement)
 app.get('/api/health', (req, res) => {
@@ -75,7 +89,7 @@ app.get('/api/health', (req, res) => {
 
 // Central Error Handler
 app.use((err, req, res, next) => {
-  console.error('[API Error]:', err);
+  console.error('[API Error]:', err.message || err);
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
     success: false,
@@ -85,7 +99,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server if not imported by test runner
+// Start Server if not imported by tests
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
   app.listen(PORT, () => {

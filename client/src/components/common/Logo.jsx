@@ -32,3 +32,4 @@ export default function Logo({ size = 'md', className = '' }) {
     </Link>
   );
 }
+

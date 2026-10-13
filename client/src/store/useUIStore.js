@@ -19,3 +19,4 @@ export const useUIStore = create((set) => ({
   openFilterSheet: () => set({ isFilterSheetOpen: true }),
   closeFilterSheet: () => set({ isFilterSheetOpen: false }),
 }));
+
