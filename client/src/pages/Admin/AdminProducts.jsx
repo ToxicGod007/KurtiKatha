@@ -8,13 +8,17 @@ import {
   X, 
   Check, 
   AlertCircle,
-  Package
+  Package,
+  Upload,
+  Loader2
 } from 'lucide-react';
 import { api } from '../../api/client';
 
 export default function AdminProducts() {
   const queryClient = useQueryClient();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -89,6 +93,35 @@ export default function AdminProducts() {
     const updated = [...formData.variants];
     updated[index].stock = Math.max(0, parseInt(value, 10) || 0);
     setFormData((prev) => ({ ...prev, variants: updated }));
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select a valid image file (JPG, PNG, WEBP, AVIF).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image size exceeds 5MB limit. Please choose a smaller image.');
+      return;
+    }
+
+    try {
+      setIsUploadingImage(true);
+      setUploadError('');
+      const res = await api.uploadImage(file);
+      if (res?.url) {
+        setFormData((prev) => ({ ...prev, imageUrl: res.url }));
+      }
+    } catch (err) {
+      setUploadError(err.message || 'Image upload failed. Please verify Cloudinary credentials.');
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = '';
+    }
   };
 
   const handleCreateSubmit = (e) => {
@@ -325,16 +358,72 @@ export default function AdminProducts() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-charcoal-900 mb-1">Image URL *</label>
-                <input
-                  type="url"
-                  required
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/photo-..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 text-xs"
-                />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-charcoal-900">Product Image *</label>
+                  <span className="text-[10px] text-gray-500 font-medium">Cloudinary CDN (Saves MongoDB Storage)</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                  <label className={`flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-colors ${
+                    isUploadingImage 
+                      ? 'bg-cream-100 text-gray-400 border-cream-200 cursor-not-allowed'
+                      : 'bg-brand-50 hover:bg-brand-100 text-brand-700 border-brand-200'
+                  }`}>
+                    {isUploadingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+                        <span>Uploading to Cloudinary...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 text-brand-600" />
+                        <span>Upload from Computer</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      onChange={handleFileUpload}
+                      disabled={isUploadingImage}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <span className="text-[10px] text-gray-400 font-semibold uppercase text-center sm:text-left">OR</span>
+
+                  <input
+                    type="url"
+                    required
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="Paste direct CDN image URL (https://...)"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-cream-300 text-xs"
+                  />
+                </div>
+
+                {uploadError && (
+                  <p className="text-[11px] text-red-600 flex items-center gap-1 font-medium bg-red-50 p-2 rounded-lg border border-red-200">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    {uploadError}
+                  </p>
+                )}
+
+                {/* Thumbnail Preview */}
+                {formData.imageUrl && (
+                  <div className="flex items-center gap-3 p-2 bg-cream-50 rounded-xl border border-cream-200 w-fit">
+                    <img
+                      src={formData.imageUrl}
+                      alt="Product preview"
+                      className="w-12 h-16 object-cover rounded-lg border border-cream-200"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                    <div className="text-[10px] text-gray-600 max-w-xs truncate">
+                      <span className="font-bold block text-charcoal-900">Current Image:</span>
+                      <span className="text-gray-500 font-mono truncate block">{formData.imageUrl}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

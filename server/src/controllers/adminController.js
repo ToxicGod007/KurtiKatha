@@ -3,6 +3,7 @@ import { Product } from '../models/Product.js';
 import { User } from '../models/User.js';
 import { Coupon } from '../models/Coupon.js';
 import { Category } from '../models/Category.js';
+import cloudinary, { isCloudinaryConfigured } from '../config/cloudinary.js';
 
 export const getDashboardMetrics = async (req, res, next) => {
   try {
@@ -200,6 +201,61 @@ export const getAdminCustomers = async (req, res, next) => {
   try {
     const customers = await User.find({ role: 'customer' }).select('-passwordHash').sort({ createdAt: -1 });
     res.status(200).json({ success: true, customers });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image file provided. Please choose a file to upload.',
+      });
+    }
+
+    if (!isCloudinaryConfigured()) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Cloudinary is not configured on the server yet. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in your environment variables.',
+      });
+    }
+
+    // Upload buffer to Cloudinary with automatic optimization
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'kurtikatha/products',
+        resource_type: 'image',
+        transformation: [
+          { width: 1400, crop: 'limit' },
+          { quality: 'auto:good' },
+          { fetch_format: 'auto' },
+        ],
+      },
+      (error, result) => {
+        if (error) {
+          console.error('[Cloudinary Upload Error]:', error);
+          return res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to upload image to Cloudinary',
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          url: result.secure_url,
+          publicId: result.public_id,
+          width: result.width,
+          height: result.height,
+          format: result.format,
+          bytes: result.bytes,
+        });
+      }
+    );
+
+    uploadStream.end(req.file.buffer);
   } catch (err) {
     next(err);
   }

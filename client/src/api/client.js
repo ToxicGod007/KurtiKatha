@@ -104,4 +104,35 @@ export const api = {
       body: JSON.stringify(data),
     }),
   getAdminCustomers: () => apiRequest('/admin/customers'),
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const url = `${API_BASE}/admin/upload`;
+    const headers = {};
+    try {
+      const authStorage = localStorage.getItem('kurtikatha_auth');
+      if (authStorage) {
+        const parsed = JSON.parse(authStorage);
+        if (parsed?.state?.token) {
+          headers['Authorization'] = `Bearer ${parsed.state.token}`;
+        }
+      }
+    } catch (e) {
+      // Ignore parse error
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers,
+      credentials: 'include',
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.message || `Upload failed with status ${response.status}`);
+    }
+    return data;
+  },
 };
+
