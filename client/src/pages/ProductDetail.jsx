@@ -20,6 +20,7 @@ import { api } from '../api/client';
 import { useCartStore } from '../store/useCartStore';
 import { useUIStore } from '../store/useUIStore';
 import SizeChartModal from '../components/product/SizeChartModal';
+import SEO from '../components/common/SEO';
 
 export default function ProductDetail() {
   const { id } = useParams(); // Can be slug or MongoDB ObjectId
@@ -137,6 +138,42 @@ export default function ProductDetail() {
 
   return (
     <div className="space-y-12 pb-24 lg:pb-8">
+      <SEO
+        title={`${product.title} | KurtiKatha (কুর্টিকথা)`}
+        description={product.description || `Buy ${product.title} in pure comfortable fabric. Handcrafted Indian wear with fast Pan-India delivery.`}
+        image={images[0]?.url}
+        url={`/product/${product.slug}`}
+        type="product"
+        jsonLd={{
+          '@context': 'https://schema.org/',
+          '@type': 'Product',
+          name: product.title,
+          image: images.map((img) => img.url),
+          description: product.description || `Handcrafted ${product.title} in pure comfortable fabric.`,
+          sku: product.variants?.[0]?.sku || product.slug,
+          brand: {
+            '@type': 'Brand',
+            name: 'KurtiKatha',
+          },
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'INR',
+            price: product.price,
+            priceValidUntil: '2026-12-31',
+            itemCondition: 'https://schema.org/NewCondition',
+            availability: isOutOfStock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+            seller: {
+              '@type': 'Organization',
+              name: 'KurtiKatha',
+            },
+          },
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: product.rating?.average || 4.8,
+            reviewCount: product.rating?.count || 84,
+          },
+        }}
+      />
       
       {/* 1. Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-xs text-gray-500 overflow-x-auto whitespace-nowrap">

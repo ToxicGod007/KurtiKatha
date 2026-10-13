@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /order-success/
+Disallow: /account
+
+Sitemap: https://kurtikatha.com/sitemap.xml

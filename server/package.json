@@ -7,7 +7,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

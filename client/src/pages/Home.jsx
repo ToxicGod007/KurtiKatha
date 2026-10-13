@@ -15,6 +15,7 @@ import {
 import { api } from '../api/client';
 import { useCartStore } from '../store/useCartStore';
 import { useUIStore } from '../store/useUIStore';
+import SEO from '../components/common/SEO';
 
 export default function Home() {
   const addItem = useCartStore((state) => state.addItem);
@@ -86,6 +87,11 @@ export default function Home() {
 
   return (
     <div className="space-y-12 sm:space-y-16">
+      <SEO
+        title="KurtiKatha (কুর্টিকথা) — Handcrafted Ethnic Kurtis & Pure Cotton Nighties"
+        description="Shop Kolkata's favourite handcrafted kurtis, breathable cotton nighties, and festive sets. Affordable daily wear fashion with Pan-India delivery and COD."
+        url="/"
+      />
       
       {/* 1. Hero Banner */}
       <section className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-white shadow-elevated">

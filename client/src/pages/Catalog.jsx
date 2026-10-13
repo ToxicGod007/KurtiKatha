@@ -17,6 +17,7 @@ import {
 import { api } from '../api/client';
 import { useCartStore } from '../store/useCartStore';
 import { useUIStore } from '../store/useUIStore';
+import SEO from '../components/common/SEO';
 
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -155,6 +156,11 @@ export default function Catalog() {
 
   return (
     <div className="space-y-6">
+      <SEO
+        title={`${categoryParam === 'all' ? 'Shop Handcrafted Kurtis & Nighties' : `${categoryParam.replace('-', ' ')} Collection`} | KurtiKatha (কুর্টিকথা)`}
+        description="Explore our collection of authentic pure cotton kurtis, daily wear nighties, and festive sets in sizes S to XXL with Pan-India delivery and COD."
+        url={`/shop${categoryParam !== 'all' ? `?category=${categoryParam}` : ''}`}
+      />
       
       {/* 1. Header Banner */}
       <div className="bg-cream-100 rounded-3xl p-6 sm:p-8 border border-cream-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
