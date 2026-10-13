@@ -91,3 +91,4 @@ capture().catch((err) => {
   console.error('Error capturing admin screenshots:', err);
   process.exit(1);
 });
+

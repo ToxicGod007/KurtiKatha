@@ -218,3 +218,4 @@ describe('Zero-Trust Pricing & Shipping Calculation Tests', () => {
     expect(() => computePricingEngine({ items: [] })).toThrow(/at least one item/);
   });
 });
+

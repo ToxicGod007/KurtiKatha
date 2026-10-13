@@ -6,3 +6,4 @@ Disallow: /order-success/
 Disallow: /account
 
 Sitemap: https://kurtikatha.com/sitemap.xml
+

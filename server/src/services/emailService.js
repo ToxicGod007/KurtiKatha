@@ -111,3 +111,4 @@ export async function sendOrderConfirmationEmail(order) {
     console.log(`[Email Mock] Order confirmation generated for order #${order.orderNumber} to ${customerEmail || 'customer'}`);
   }
 }
+

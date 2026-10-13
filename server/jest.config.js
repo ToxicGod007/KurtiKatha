@@ -5,3 +5,4 @@ export default {
   verbose: true,
   testTimeout: 30000,
 };
+
