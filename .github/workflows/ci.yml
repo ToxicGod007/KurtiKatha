@@ -1,0 +1,37 @@
+name: KurtiKatha CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Build Frontend Client
+        run: npm run build:client
+
+      - name: Run Backend Tests
+        run: npm run test:server
+        env:
+          NODE_ENV: test
+          MONGODB_URI: mongodb://127.0.0.1:27017/kurtikatha_test
+          JWT_SECRET: test_jwt_secret_12345
+          RAZORPAY_KEY_ID: rzp_test_mock
+          RAZORPAY_KEY_SECRET: mock_secret_12345
+          RAZORPAY_WEBHOOK_SECRET: mock_webhook_secret_12345

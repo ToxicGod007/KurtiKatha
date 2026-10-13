@@ -1,0 +1,23 @@
+{
+  "name": "kurtikatha-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KurtiKatha E-Commerce Monorepo",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "test:server": "npm --prefix server run test",
+    "test:e2e": "playwright test"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "playwright": "^1.64.0"
+  }
+}

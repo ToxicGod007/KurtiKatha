@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: #FFFDF9;
+    color: #1E1E24;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Benglish & Bengali wordmark helper */
+.font-bengali {
+  font-family: 'Baloo Da 2', 'Noto Sans Bengali', sans-serif;
+}
+
+/* Custom scrollbar for desktop */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FAF6ED;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D62828;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #BA181B;
+  }
+}
+
+/* Hide scrollbars for swipeable carousels while keeping scrollability */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Minimum 44px touch target utility */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

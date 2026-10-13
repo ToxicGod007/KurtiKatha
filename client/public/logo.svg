@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D62828" />
+      <stop offset="100%" stop-color="#BA181B" />
+    </linearGradient>
+  </defs>
+  <!-- Decorative Motif: Floral Paisley / Motif -->
+  <g transform="translate(4, 10)">
+    <circle cx="18" cy="20" r="16" fill="#FDF2F2" stroke="#D62828" stroke-width="2"/>
+    <path d="M18 10 C24 16, 24 24, 18 28 C12 24, 12 16, 18 10 Z" fill="#D62828"/>
+    <circle cx="18" cy="20" r="3" fill="#E9C46A"/>
+  </g>
+  <!-- Text: Kurti -->
+  <text x="48" y="38" font-family="'Poppins', sans-serif" font-weight="700" font-size="28" fill="#D62828" letter-spacing="-0.5">
+    Kurti
+  </text>
+  <!-- Text: কথা (Bengali) with Golden Accent -->
+  <text x="126" y="40" font-family="'Baloo Da 2', 'Noto Sans Bengali', sans-serif" font-weight="800" font-size="31" fill="#E9C46A">
+    কথা
+  </text>
+</svg>
