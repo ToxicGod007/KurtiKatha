@@ -43,6 +43,11 @@ export const api = {
   getProduct: (idOrSlug) => apiRequest(`/products/${idOrSlug}`),
   getCategories: () => apiRequest('/categories'),
   getSettings: () => apiRequest('/settings'),
+  updateSettings: (data) =>
+    apiRequest('/settings', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
   validateCoupon: (code, orderSubtotal) =>
     apiRequest('/coupons/validate', {
       method: 'POST',
@@ -72,4 +77,29 @@ export const api = {
     }),
   getMe: () => apiRequest('/auth/me'),
   logout: () => apiRequest('/auth/logout', { method: 'POST' }),
+
+  // Admin APIs
+  getAdminMetrics: () => apiRequest('/admin/metrics'),
+  getAdminProducts: () => apiRequest('/admin/products'),
+  createAdminProduct: (data) =>
+    apiRequest('/admin/products', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateAdminProduct: (id, data) =>
+    apiRequest(`/admin/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteAdminProduct: (id) =>
+    apiRequest(`/admin/products/${id}`, {
+      method: 'DELETE',
+    }),
+  getAdminOrders: (params = '') => apiRequest(`/admin/orders${params ? `?${params}` : ''}`),
+  updateAdminOrderStatus: (id, data) =>
+    apiRequest(`/admin/orders/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  getAdminCustomers: () => apiRequest('/admin/customers'),
 };

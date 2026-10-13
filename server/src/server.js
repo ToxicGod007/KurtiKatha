@@ -15,6 +15,7 @@ import settingsRoutes from './routes/settingsRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { autoExpirePendingOrders } from './controllers/paymentController.js';
 
 dotenv.config();
@@ -79,6 +80,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health Check Endpoint (Render requirement)
 app.get('/api/health', (req, res) => {

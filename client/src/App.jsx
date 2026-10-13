@@ -13,10 +13,16 @@ import Contact from './pages/Static/Contact';
 import FAQ from './pages/Static/FAQ';
 import ShippingPolicy from './pages/Static/ShippingPolicy';
 import Terms from './pages/Static/Terms';
+import AdminLayout from './pages/Admin/AdminLayout';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminOrders from './pages/Admin/AdminOrders';
+import AdminProducts from './pages/Admin/AdminProducts';
+import AdminSettings from './pages/Admin/AdminSettings';
 
 export default function App() {
   return (
     <Routes>
+      {/* Customer Storefront Routes */}
       <Route path="/" element={<AppLayout />}>
         <Route index element={<Home />} />
         <Route path="shop" element={<Catalog />} />
@@ -35,8 +41,18 @@ export default function App() {
         <Route path="returns" element={<ShippingPolicy />} />
         <Route path="terms" element={<Terms />} />
         <Route path="privacy-policy" element={<Terms />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
+
+      {/* Admin Operations Portal Routes */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="settings" element={<AdminSettings />} />
+      </Route>
+
+      {/* Catch-all fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
