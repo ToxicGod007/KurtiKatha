@@ -82,6 +82,17 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Root endpoint for status & friendly redirect
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'KurtiKatha API Server',
+    message: 'API is running. Visit the storefront for shopping.',
+    storefront: process.env.CLIENT_URL || 'https://kurtikatha.vercel.app',
+    healthCheck: '/api/health',
+  });
+});
+
 // Health Check Endpoint (Render requirement)
 app.get('/api/health', (req, res) => {
   res.status(200).json({
