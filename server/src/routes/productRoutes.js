@@ -8,3 +8,4 @@ router.get('/featured', getFeaturedCollections);
 router.get('/:identifier', getProductBySlugOrId);
 
 export default router;
+

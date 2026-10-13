@@ -129,3 +129,4 @@ export default function SizeChartModal({ isOpen, onClose, category = 'kurtis' })
     </div>
   );
 }
+

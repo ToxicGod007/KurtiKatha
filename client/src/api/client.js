@@ -7,7 +7,6 @@ export async function apiRequest(endpoint, options = {}) {
     ...options.headers,
   };
 
-  // If token is stored in localStorage / state, send Authorization header as fallback
   try {
     const authStorage = localStorage.getItem('kurtikatha_auth');
     if (authStorage) {
@@ -17,13 +16,13 @@ export async function apiRequest(endpoint, options = {}) {
       }
     }
   } catch (e) {
-    // Ignore storage parse errors
+    // Ignore parse errors
   }
 
   const response = await fetch(url, {
     ...options,
     headers,
-    credentials: 'include', // sends httpOnly cookies
+    credentials: 'include',
   });
 
   const data = await response.json().catch(() => ({}));
@@ -38,7 +37,6 @@ export async function apiRequest(endpoint, options = {}) {
   return data;
 }
 
-// API methods
 export const api = {
   getProducts: (params = '') => apiRequest(`/products${params ? `?${params}` : ''}`),
   getFeatured: () => apiRequest('/products/featured'),
@@ -50,6 +48,18 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ code, orderSubtotal }),
     }),
+  checkoutOrder: (payload) =>
+    apiRequest('/orders/checkout', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  verifyPayment: (payload) =>
+    apiRequest('/payments/verify', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getOrder: (id) => apiRequest(`/orders/${id}`),
+  getMyOrders: () => apiRequest('/orders/my-orders'),
   login: (credentials) =>
     apiRequest('/auth/login', {
       method: 'POST',

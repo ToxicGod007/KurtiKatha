@@ -14,6 +14,8 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import { autoExpirePendingOrders } from './controllers/paymentController.js';
 
 dotenv.config();
 
@@ -51,7 +53,7 @@ if (process.env.NODE_ENV !== 'test') {
 // Cookie Parser
 app.use(cookieParser());
 
-// Raw Body parser for Razorpay Webhook signature verification
+// Raw Body parser for Razorpay Webhook signature verification (MUST be before express.json)
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 
 // Standard JSON & URL-Encoded parsers
@@ -76,6 +78,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health Check Endpoint (Render requirement)
 app.get('/api/health', (req, res) => {
@@ -105,6 +108,9 @@ if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`[KurtiKatha Server] Running on http://localhost:${PORT}`);
   });
+
+  // Background job to clean up stale pending orders every 10 minutes
+  setInterval(autoExpirePendingOrders, 10 * 60 * 1000);
 }
 
 export default app;

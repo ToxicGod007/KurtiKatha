@@ -12,3 +12,4 @@ router.put('/address', protect, addOrUpdateAddress);
 router.post('/wishlist/:productId', protect, toggleWishlist);
 
 export default router;
+

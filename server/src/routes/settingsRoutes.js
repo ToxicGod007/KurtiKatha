@@ -8,3 +8,4 @@ router.get('/', getSettings);
 router.put('/', protect, requireAdmin, updateSettings);
 
 export default router;
+

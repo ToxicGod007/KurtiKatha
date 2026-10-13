@@ -166,3 +166,4 @@ export const toggleWishlist = async (req, res, next) => {
     next(err);
   }
 };
+

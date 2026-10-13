@@ -6,3 +6,4 @@ const router = express.Router();
 router.post('/validate', validateCoupon);
 
 export default router;
+

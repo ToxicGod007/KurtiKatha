@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
 import Account from './pages/Account';
 import Wishlist from './pages/Account/Wishlist';
 import About from './pages/Static/About';
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="shop" element={<Catalog />} />
         <Route path="product/:id" element={<ProductDetail />} />
         <Route path="checkout" element={<Checkout />} />
+        <Route path="order-success/:orderNumber" element={<OrderSuccess />} />
         <Route path="account" element={<Account />} />
         <Route path="account/wishlist" element={<Wishlist />} />
         <Route path="account/orders" element={<Account />} />

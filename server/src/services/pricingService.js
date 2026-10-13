@@ -108,3 +108,4 @@ export async function calculateOrderPricing({ items, couponCode }) {
     freeShippingThreshold: settings.freeShippingThreshold,
   };
 }
+

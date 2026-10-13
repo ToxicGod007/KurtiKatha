@@ -155,3 +155,4 @@ export const getFeaturedCollections = async (req, res, next) => {
     next(err);
   }
 };
+
