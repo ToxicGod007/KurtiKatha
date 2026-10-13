@@ -5,10 +5,14 @@ import Footer from './Footer';
 import MobileNav from './MobileNav';
 import WhatsAppButton from '../common/WhatsAppButton';
 import CartDrawer from '../cart/CartDrawer';
+import BackendWarmup from '../common/BackendWarmup';
 
 export default function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-cream-50 text-charcoal-900 selection:bg-brand-500 selection:text-white">
+      {/* Cold start wake-up banner for Render */}
+      <BackendWarmup />
+
       {/* 1. Global Header */}
       <Header />
 
