@@ -13,11 +13,11 @@ export default function AppLayout() {
       {/* Cold start wake-up banner for Render */}
       <BackendWarmup />
 
-      {/* 1. Global Header */}
+      {/* 1. Global Minimalist Header */}
       <Header />
 
-      {/* 2. Page Content Viewport */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      {/* 2. Page Content Viewport with generous mobile bottom clearance */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 lg:pb-8">
         <Outlet />
       </main>
 
@@ -27,7 +27,7 @@ export default function AppLayout() {
       {/* 4. Mobile Bottom Navigation (screens < lg) */}
       <MobileNav />
 
-      {/* 5. Floating WhatsApp Click-to-Chat Button */}
+      {/* 5. Minimalist WhatsApp Support Button */}
       <WhatsAppButton />
 
       {/* 6. Slide-in Cart Drawer */}
@@ -35,4 +35,3 @@ export default function AppLayout() {
     </div>
   );
 }
-

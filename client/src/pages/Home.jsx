@@ -238,26 +238,23 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-5">
             {bestsellers.slice(0, 8).map((prod) => {
               const discount = Math.round(((prod.mrp - prod.price) / prod.mrp) * 100);
               return (
                 <div
                   key={prod._id}
-                  className="group bg-white rounded-2xl border border-cream-200 overflow-hidden shadow-card hover:shadow-elevated transition-all flex flex-col"
+                  className="group bg-white rounded-2xl border border-cream-200/70 overflow-hidden hover:shadow-card transition-all flex flex-col"
                 >
                   <Link to={`/product/${prod.slug}`} className="relative aspect-3/4 overflow-hidden bg-cream-100 block">
                     <img
                       src={prod.images?.[0]?.url || 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600'}
                       alt={prod.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-brand-500 text-white font-bold text-[10px] tracking-wide uppercase">
-                      Bestseller
-                    </span>
                     {discount > 0 && (
-                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-gold-400 text-charcoal-900 font-extrabold text-[10px]">
+                      <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-white/95 text-charcoal-900 font-bold text-[9px] shadow-2xs">
                         {discount}% OFF
                       </span>
                     )}
@@ -268,32 +265,32 @@ export default function Home() {
                         e.preventDefault();
                         handleQuickAdd(prod);
                       }}
-                      className="absolute bottom-2 inset-x-2 py-2 px-3 bg-white/95 backdrop-blur-sm rounded-xl font-bold text-xs text-brand-600 hover:bg-brand-500 hover:text-white transition-all shadow-sm flex items-center justify-center gap-1.5 opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
+                      className="absolute bottom-2 inset-x-2 py-2 px-3 bg-white/95 backdrop-blur-sm rounded-xl font-bold text-xs text-charcoal-900 hover:bg-brand-500 hover:text-white transition-all shadow-2xs flex items-center justify-center gap-1.5 opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
                     >
                       <ShoppingBag className="w-3.5 h-3.5" />
                       <span>Quick Add</span>
                     </button>
                   </Link>
 
-                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+                  <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center gap-1 text-[11px] text-gray-500 mb-1">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <div className="flex items-center gap-1 text-[10px] text-gray-400 mb-1">
+                        <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                         <span className="font-semibold text-charcoal-900">{prod.rating?.average || 4.8}</span>
                         <span>({prod.rating?.count || 45})</span>
                       </div>
                       <Link to={`/product/${prod.slug}`}>
-                        <h3 className="text-xs sm:text-sm font-semibold text-charcoal-900 line-clamp-2 leading-snug group-hover:text-brand-600 transition-colors">
+                        <h3 className="text-xs sm:text-sm font-semibold text-charcoal-900 line-clamp-1 group-hover:text-brand-600 transition-colors">
                           {prod.title}
                         </h3>
                       </Link>
                     </div>
 
-                    <div className="mt-3 pt-2 border-t border-cream-100 flex items-baseline justify-between">
+                    <div className="mt-2.5 pt-2 border-t border-cream-100 flex items-baseline justify-between">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-base sm:text-lg font-bold text-brand-600">₹{prod.price}</span>
+                        <span className="text-sm font-bold text-charcoal-900">₹{prod.price}</span>
                         {prod.mrp > prod.price && (
-                          <span className="text-xs text-gray-400 line-through">₹{prod.mrp}</span>
+                          <span className="text-[10px] text-gray-400 line-through">₹{prod.mrp}</span>
                         )}
                       </div>
                       <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">

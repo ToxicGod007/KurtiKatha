@@ -440,29 +440,20 @@ export default function ProductDetail() {
         </section>
       )}
 
-      {/* 4. MOBILE STICKY BOTTOM ACTION BAR (Strict Requirement) */}
-      <div className="lg:hidden fixed bottom-16 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-cream-200 p-3 flex items-center gap-3 shadow-elevated">
-        <div className="shrink-0 pl-1">
-          <p className="text-[10px] text-gray-500">Price</p>
-          <p className="text-base font-extrabold text-brand-600 leading-none">₹{product.price}</p>
+      {/* 4. MOBILE STICKY BOTTOM ACTION BAR */}
+      <div className="lg:hidden fixed bottom-14 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-cream-200/80 px-4 py-2.5 flex items-center justify-between gap-3 shadow-soft">
+        <div>
+          <span className="text-[10px] text-gray-400 block">Total</span>
+          <span className="text-base font-bold text-charcoal-900 leading-none">₹{product.price}</span>
         </div>
         <button
           type="button"
           disabled={isOutOfStock}
           onClick={handleAddToCart}
-          className="touch-target flex-1 py-3 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+          className="flex-1 py-3 px-5 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-40 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors active:scale-[0.98]"
         >
           <ShoppingBag className="w-4 h-4" />
           <span>{isOutOfStock ? 'Sold Out' : 'Add to Bag'}</span>
-        </button>
-        <button
-          type="button"
-          disabled={isOutOfStock}
-          onClick={handleAddToCart}
-          className="touch-target flex-1 py-3 px-4 rounded-xl bg-gold-400 hover:bg-gold-500 disabled:opacity-50 text-charcoal-900 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
-        >
-          <Zap className="w-4 h-4 fill-charcoal-900" />
-          <span>Buy Now</span>
         </button>
       </div>
 
