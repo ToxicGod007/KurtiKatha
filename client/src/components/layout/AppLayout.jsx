@@ -5,6 +5,7 @@ import Footer from './Footer';
 import MobileNav from './MobileNav';
 import WhatsAppButton from '../common/WhatsAppButton';
 import CartDrawer from '../cart/CartDrawer';
+import MobileMenuDrawer from './MobileMenuDrawer';
 import BackendWarmup from '../common/BackendWarmup';
 
 export default function AppLayout() {
@@ -32,6 +33,9 @@ export default function AppLayout() {
 
       {/* 6. Slide-in Cart Drawer */}
       <CartDrawer />
+
+      {/* 7. Mobile Navigation Side Panel Drawer */}
+      <MobileMenuDrawer />
     </div>
   );
 }

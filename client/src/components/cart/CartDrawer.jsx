@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   X, 
@@ -61,22 +62,22 @@ export default function CartDrawer() {
 
   if (!isCartDrawerOpen) return null;
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-50 overflow-hidden" 
+      className="fixed inset-0 z-[100] overflow-hidden" 
       role="dialog" 
       aria-modal="true" 
       aria-label="Shopping Cart Drawer"
     >
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 z-[100]"
         onClick={closeCartDrawer}
       />
 
       {/* Slide-in Panel from Right */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col animate-slide-up">
+      <div className="fixed inset-y-0 right-0 max-w-full flex z-[101]">
+        <div className="w-screen max-w-md h-full h-[100dvh] bg-white shadow-2xl flex flex-col overflow-hidden animate-slide-up">
           
           {/* Header */}
           <div className="px-5 py-4 border-b border-cream-200/80 flex items-center justify-between bg-cream-50/50">
@@ -261,6 +262,7 @@ export default function CartDrawer() {
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

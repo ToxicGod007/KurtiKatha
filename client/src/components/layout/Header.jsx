@@ -11,7 +11,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import Logo from '../common/Logo';
-import MobileMenuDrawer from './MobileMenuDrawer';
 import { useUIStore } from '../../store/useUIStore';
 import { useCartStore } from '../../store/useCartStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -199,9 +198,6 @@ export default function Header() {
         )}
 
       </div>
-
-      {/* 4. Dedicated Mobile Side Navigation Drawer */}
-      <MobileMenuDrawer />
     </header>
   );
 }
