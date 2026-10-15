@@ -200,6 +200,12 @@ export default function Checkout() {
           contact: formData.phone,
           method: 'upi', // Pre-selects UPI tab by default for 1-tap checkout
         },
+        method: {
+          upi: true,
+          card: true,
+          netbanking: true,
+          wallet: true,
+        },
         config: {
           display: {
             blocks: {
@@ -208,6 +214,7 @@ export default function Checkout() {
                 instruments: [
                   {
                     method: 'upi',
+                    flows: ['intent', 'qr'],
                   },
                 ],
               },
