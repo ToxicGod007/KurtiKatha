@@ -158,3 +158,4 @@ describe('Telegram Bot Admin Service & Alerts Tests', () => {
     await expect(sendTelegramLowStockAlert('Cotton Kurti', 'M', 2)).resolves.not.toThrow();
   });
 });
+

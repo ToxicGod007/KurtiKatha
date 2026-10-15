@@ -13,7 +13,9 @@ import {
   AlertCircle,
   Lock,
   ShoppingBag,
-  Sparkles
+  Sparkles,
+  Smartphone,
+  Zap
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useCartStore } from '../store/useCartStore';
@@ -196,9 +198,41 @@ export default function Checkout() {
           name: formData.name,
           email: formData.email,
           contact: formData.phone,
+          method: 'upi', // Pre-selects UPI tab by default for 1-tap checkout
+        },
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: 'Pay via UPI (PhonePe, Google Pay, Paytm, QR)',
+                instruments: [
+                  {
+                    method: 'upi',
+                  },
+                ],
+              },
+              cards: {
+                name: 'Credit / Debit Cards & NetBanking',
+                instruments: [
+                  { method: 'card' },
+                  { method: 'netbanking' },
+                  { method: 'wallet' },
+                ],
+              },
+            },
+            sequence: ['block.upi', 'block.cards'],
+            preferences: {
+              show_default_blocks: true,
+            },
+          },
         },
         theme: {
           color: '#D62828',
+        },
+        notes: {
+          orderNumber: checkoutRes.orderNumber,
+          customerPhone: formData.phone,
+          preferred_mode: 'upi',
         },
         handler: async function (response) {
           try {
@@ -401,11 +435,11 @@ export default function Checkout() {
             </div>
 
             <div className="space-y-3">
-              {/* Option 1: Razorpay (Prepaid) */}
+              {/* Option 1: Razorpay UPI & Online Payment (Prepaid) */}
               <label 
-                className={`flex items-start gap-3.5 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                className={`flex items-start gap-3.5 p-4 sm:p-5 rounded-2xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
-                    ? 'border-brand-500 bg-brand-50/50 shadow-xs'
+                    ? 'border-brand-500 bg-brand-50/40 shadow-xs ring-1 ring-brand-500/20'
                     : 'border-cream-200 hover:border-cream-300 bg-white'
                 }`}
               >
@@ -415,21 +449,73 @@ export default function Checkout() {
                   value="razorpay"
                   checked={paymentMethod === 'razorpay'}
                   onChange={() => setPaymentMethod('razorpay')}
-                  className="mt-1 text-brand-500 focus:ring-brand-500"
+                  className="mt-1 text-brand-500 focus:ring-brand-500 shrink-0"
                 />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
+                <div className="flex-1 space-y-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-sm font-bold text-charcoal-900 flex items-center gap-1.5">
-                      <CreditCard className="w-4 h-4 text-brand-500" />
-                      <span>Razorpay Online Payment</span>
+                      <Smartphone className="w-4 h-4 text-brand-500" />
+                      <span>UPI & Online Payment (Razorpay)</span>
                     </span>
                     <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                      Recommended
+                      ⚡ RECOMMENDED / FASTEST
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Pay securely using Google Pay, PhonePe, Paytm, UPI, Cards (Visa, MasterCard, RuPay), or NetBanking.
+
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Pay instantly via Google Pay, PhonePe, Paytm, dynamic UPI QR, or debit/credit cards.
                   </p>
+
+                  {/* Brand Badges: Google Pay, PhonePe, Paytm, BHIM UPI, Cards */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    {/* Google Pay */}
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-cream-200 text-charcoal-800 text-[11px] font-bold shadow-2xs">
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24Z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15Z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98Z"/>
+                      </svg>
+                      <span>Google Pay</span>
+                    </span>
+
+                    {/* PhonePe */}
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#5f259f]/10 border border-[#5f259f]/20 text-[#5f259f] text-[11px] font-bold shadow-2xs">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#5f259f] text-white flex items-center justify-center text-[9px] font-black leading-none">पे</span>
+                      <span>PhonePe</span>
+                    </span>
+
+                    {/* Paytm */}
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#00b9f5]/10 border border-[#00b9f5]/25 text-[#002e6e] text-[11px] font-bold shadow-2xs">
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#00b9f5] text-white flex items-center justify-center text-[9px] font-black leading-none">P</span>
+                      <span>Paytm</span>
+                    </span>
+
+                    {/* Any UPI / QR */}
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold shadow-2xs">
+                      <Zap className="w-3 h-3 text-emerald-600" />
+                      <span>Scan QR / UPI ID</span>
+                    </span>
+
+                    {/* Cards */}
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cream-100 border border-cream-200 text-gray-600 text-[11px] font-medium">
+                      <CreditCard className="w-3 h-3 text-gray-500" />
+                      <span>Cards & NetBanking</span>
+                    </span>
+                  </div>
+
+                  {/* Informational Callout when selected */}
+                  {paymentMethod === 'razorpay' && (
+                    <div className="p-3 rounded-xl bg-white border border-brand-200/80 text-xs text-charcoal-800 space-y-1 animate-fade-in mt-2">
+                      <div className="flex items-center gap-1.5 font-bold text-brand-600">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+                        <span>Instant 1-Tap UPI Enabled</span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 leading-normal">
+                        On mobile, clicking Pay will open PhonePe or Google Pay directly. On desktop, scan the dynamic QR code on screen.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </label>
 
@@ -575,14 +661,19 @@ export default function Checkout() {
                 {isSubmitting
                   ? 'Processing Order...'
                   : paymentMethod === 'cod'
-                  ? `Confirm COD Order (₹${grandTotal})`
-                  : `Pay with Razorpay (₹${grandTotal})`}
+                  ? `Confirm COD Order • ₹${grandTotal}`
+                  : `Pay with UPI / Cards • ₹${grandTotal}`}
               </span>
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 text-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>PCI-DSS 256-bit Secure Razorpay Checkout</span>
+            <div className="flex flex-col items-center justify-center gap-1 text-[11px] text-gray-400 text-center pt-1">
+              <div className="flex items-center gap-1.5 font-medium text-charcoal-700">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>100% Secure Checkout via Razorpay</span>
+              </div>
+              <span className="text-[10px] text-gray-400">
+                Supports PhonePe, Google Pay, Paytm, BHIM, UPI QR, Cards & NetBanking
+              </span>
             </div>
 
           </div>

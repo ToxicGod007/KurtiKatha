@@ -637,3 +637,4 @@ export function stopTelegramPolling() {
     pollingAbortController = null;
   }
 }
+

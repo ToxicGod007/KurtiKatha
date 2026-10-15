@@ -309,7 +309,7 @@ export default function CartDrawer() {
               {/* Trust Badge */}
               <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 pt-0.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Encrypted Razorpay Checkout • Cash on Delivery</span>
+                <span>UPI (PhonePe, GPay) • Cards • Cash on Delivery</span>
               </div>
             </div>
           )}
