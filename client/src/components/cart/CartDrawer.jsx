@@ -105,21 +105,25 @@ export default function CartDrawer() {
                 {remaining > 0 ? (
                   <span>Add <strong className="text-charcoal-900 font-semibold">₹{remaining}</strong> for Free Delivery</span>
                 ) : (
-                  <span className="text-emerald-700 font-semibold">Unlocked Free Delivery!</span>
+                  <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                    <span>✨</span> Unlocked Free Delivery!
+                  </span>
                 )}
               </span>
               <span className="font-bold text-charcoal-900">{progress}%</span>
             </div>
             <div className="w-full h-1.5 bg-cream-200 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-brand-500 transition-all duration-300 rounded-full"
+                className={`h-full transition-all duration-300 rounded-full ${
+                  remaining === 0 ? 'bg-emerald-500' : 'bg-brand-500'
+                }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
 
           {/* Cart Items List */}
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-3">
             {items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-16 space-y-4">
                 <div className="w-16 h-16 rounded-full bg-cream-100 flex items-center justify-center text-gray-400">
@@ -146,65 +150,94 @@ export default function CartDrawer() {
               items.map((item) => (
                 <div 
                   key={`${item.productId}-${item.variantId || item.size}`}
-                  className="flex gap-3.5 py-3 border-b border-cream-100 last:border-b-0 items-start"
+                  className="p-3 rounded-2xl bg-white border border-cream-200/90 shadow-2xs hover:border-cream-300 transition-all flex gap-3.5 items-center"
                 >
-                  {/* Clean Thumbnail */}
-                  <img
-                    src={item.image || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&auto=format&fit=crop&q=80'}
-                    alt={item.title}
-                    className="w-18 h-22 object-cover rounded-xl bg-cream-100 shrink-0"
-                    loading="lazy"
-                  />
+                  {/* Compact Product Thumbnail */}
+                  <Link
+                    to={`/product/${item.productId}`}
+                    onClick={closeCartDrawer}
+                    className="w-20 h-24 rounded-xl overflow-hidden bg-cream-100 shrink-0 border border-cream-200/60 block relative group"
+                  >
+                    <img
+                      src={item.image || 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&auto=format&fit=crop&q=80'}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </Link>
 
-                  {/* Item Details */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-between h-22">
+                  {/* Item Details Column */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
                     <div>
-                      <div className="flex items-start justify-between gap-2">
-                        <h4 className="text-xs font-semibold text-charcoal-900 line-clamp-1">
+                      {/* Title & Delete Action */}
+                      <div className="flex items-start justify-between gap-1.5">
+                        <Link
+                          to={`/product/${item.productId}`}
+                          onClick={closeCartDrawer}
+                          className="text-xs sm:text-sm font-semibold text-charcoal-900 hover:text-brand-600 line-clamp-1 transition-colors leading-tight"
+                        >
                           {item.title}
-                        </h4>
+                        </Link>
                         <button
                           type="button"
                           onClick={() => removeItem(item.productId, item.variantId)}
-                          className="text-gray-400 hover:text-red-600 transition-colors p-0.5"
+                          className="text-gray-400 hover:text-red-600 transition-colors p-1 -mr-1 -mt-1 rounded-lg hover:bg-red-50 shrink-0"
                           aria-label="Remove item"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-1.5 mt-1 text-[11px] text-gray-500">
-                        {item.size && <span className="text-gray-600 font-medium">Size {item.size}</span>}
-                        {item.size && item.color && <span>•</span>}
-                        {item.color && <span>{item.color}</span>}
+                      {/* Variant metadata badges */}
+                      <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                        {item.size && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-cream-100 text-charcoal-700 text-[11px] font-medium border border-cream-200/60">
+                            Size: {item.size}
+                          </span>
+                        )}
+                        {item.color && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-cream-100 text-charcoal-700 text-[11px] font-medium border border-cream-200/60">
+                            {item.color}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Price and Minimalist Quantity Stepper */}
-                    <div className="flex items-center justify-between">
+                    {/* Price and Quantity Stepper */}
+                    <div className="flex items-center justify-between mt-2 pt-1 border-t border-cream-100">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-xs font-bold text-charcoal-900">₹{item.price}</span>
+                        <span className="text-xs sm:text-sm font-extrabold text-charcoal-900">
+                          ₹{item.price * item.quantity}
+                        </span>
                         {item.mrp && item.mrp > item.price && (
-                          <span className="text-[10px] text-gray-400 line-through">₹{item.mrp}</span>
+                          <span className="text-[10px] sm:text-[11px] text-gray-400 line-through">
+                            ₹{item.mrp * item.quantity}
+                          </span>
+                        )}
+                        {item.quantity > 1 && (
+                          <span className="text-[10px] text-gray-400 hidden xs:inline">
+                            (₹{item.price} ea)
+                          </span>
                         )}
                       </div>
 
-                      <div className="flex items-center border border-cream-300 rounded-lg bg-white overflow-hidden shadow-2xs">
+                      {/* Quantity Stepper */}
+                      <div className="flex items-center border border-cream-300 rounded-xl bg-white shadow-2xs overflow-hidden">
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.productId, item.variantId, item.quantity - 1)}
-                          className="w-6 h-6 flex items-center justify-center text-charcoal-900 hover:bg-cream-100 transition-colors"
+                          className="w-6 sm:w-7 h-6 sm:h-7 flex items-center justify-center text-charcoal-800 hover:bg-cream-100 active:bg-cream-200 transition-colors"
                           aria-label="Decrease quantity"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="w-7 text-center text-xs font-semibold text-charcoal-900">
+                        <span className="w-6 sm:w-7 text-center text-xs font-bold text-charcoal-900 select-none">
                           {item.quantity}
                         </span>
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
-                          className="w-6 h-6 flex items-center justify-center text-charcoal-900 hover:bg-cream-100 transition-colors"
+                          className="w-6 sm:w-7 h-6 sm:h-7 flex items-center justify-center text-charcoal-800 hover:bg-cream-100 active:bg-cream-200 transition-colors"
                           aria-label="Increase quantity"
                         >
                           <Plus className="w-3 h-3" />
@@ -220,41 +253,62 @@ export default function CartDrawer() {
           {/* Minimalist Drawer Footer */}
           {items.length > 0 && (
             <div className="px-5 py-4 border-t border-cream-200/80 bg-white space-y-3">
-              <div className="space-y-1.5 text-xs text-gray-500">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span className="font-medium text-charcoal-900">₹{subtotal}</span>
+              {/* Savings Celebration Pill */}
+              {savings > 0 && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+                  <span className="text-sm">🎉</span>
+                  <span>You are saving <strong>₹{savings}</strong> on this order!</span>
                 </div>
-                {savings > 0 && (
-                  <div className="flex justify-between text-emerald-700">
-                    <span>Discount Savings</span>
-                    <span>-₹{savings}</span>
+              )}
+
+              {/* Price Breakdown */}
+              <div className="space-y-1.5 text-xs text-gray-600">
+                <div className="flex justify-between">
+                  <span>Bag Subtotal</span>
+                  <span className="font-semibold text-charcoal-900">₹{subtotal}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="flex items-center gap-1.5">
+                    Shipping
+                    {shippingFee === 0 && (
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                        Free
+                      </span>
+                    )}
+                  </span>
+                  <span>
+                    {shippingFee === 0 ? (
+                      <span className="text-emerald-700 font-bold">FREE</span>
+                    ) : (
+                      <span className="font-semibold text-charcoal-900">₹{shippingFee}</span>
+                    )}
+                  </span>
+                </div>
+                <div className="pt-2 border-t border-cream-100 flex justify-between items-baseline text-sm font-bold text-charcoal-900">
+                  <span>Total Amount</span>
+                  <div className="text-right">
+                    <span className="text-base sm:text-lg font-extrabold text-brand-600">₹{grandTotal}</span>
+                    <span className="block text-[10px] font-normal text-gray-400">Inclusive of all taxes</span>
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>{shippingFee === 0 ? <span className="text-emerald-700 font-bold">FREE</span> : `₹${shippingFee}`}</span>
-                </div>
-                <div className="pt-2 border-t border-cream-100 flex justify-between text-sm font-bold text-charcoal-900">
-                  <span>Total</span>
-                  <span className="text-base text-brand-600">₹{grandTotal}</span>
                 </div>
               </div>
 
+              {/* Checkout CTA */}
               <button
                 type="button"
                 onClick={() => {
                   closeCartDrawer();
                   navigate('/checkout');
                 }}
-                className="w-full py-3 px-5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs active:scale-[0.99]"
+                className="w-full py-3.5 px-6 rounded-2xl bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-xs"
               >
-                <span>Proceed to Checkout • ₹{grandTotal}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Proceed to Checkout</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
 
-              <div className="flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
+              {/* Trust Badge */}
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 pt-0.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Encrypted Razorpay Checkout • Cash on Delivery</span>
               </div>
             </div>

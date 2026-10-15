@@ -48,6 +48,10 @@ export default {
         sans: ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
         bengali: ['"Baloo Da 2"', '"Noto Sans Bengali"', 'sans-serif'],
       },
+      spacing: {
+        18: '4.5rem',
+        22: '5.5rem',
+      },
       boxShadow: {
         'soft': '0 4px 20px -2px rgba(214, 40, 40, 0.08)',
         'card': '0 2px 12px rgba(0, 0, 0, 0.06)',
