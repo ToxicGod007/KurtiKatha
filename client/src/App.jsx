@@ -18,11 +18,14 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminOrders from './pages/Admin/AdminOrders';
 import AdminProducts from './pages/Admin/AdminProducts';
 import AdminSettings from './pages/Admin/AdminSettings';
+import ScrollToTop from './components/common/ScrollToTop';
 
 export default function App() {
   return (
-    <Routes>
-      {/* Customer Storefront Routes */}
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Customer Storefront Routes */}
       <Route path="/" element={<AppLayout />}>
         <Route index element={<Home />} />
         <Route path="shop" element={<Catalog />} />
@@ -54,6 +57,7 @@ export default function App() {
       {/* Catch-all fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
 
