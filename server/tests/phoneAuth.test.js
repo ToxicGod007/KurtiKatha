@@ -33,3 +33,4 @@ describe('Indian Phone Normalization & Validation Tests', () => {
     expect(formatDisplayPhone('8697449885')).toBe('+91 86974 49885');
   });
 });
+

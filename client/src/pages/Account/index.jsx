@@ -17,7 +17,8 @@ import {
   RotateCcw,
   Sparkles,
   ChevronRight,
-  Clock
+  Clock,
+  X
 } from 'lucide-react';
 import { api } from '../../api/client';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -89,6 +90,17 @@ export default function Account() {
   });
 
   const orders = ordersData?.orders || [];
+
+  // Helper to sanitize and normalize phone input on typing or paste
+  const handlePhoneChange = (val) => {
+    let digits = val.replace(/\D/g, '');
+    if (digits.length === 12 && digits.startsWith('91')) {
+      digits = digits.slice(2);
+    } else if (digits.length === 11 && digits.startsWith('0')) {
+      digits = digits.slice(1);
+    }
+    setPhoneInput(digits.slice(0, 10));
+  };
 
   // 1. Send OTP Handler
   const handleSendOtp = async (e) => {
@@ -273,27 +285,45 @@ export default function Account() {
           {step === 'phone' && (
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-charcoal-900 mb-1.5">
+                <label htmlFor="phone-input" className="block text-xs font-bold text-charcoal-900 mb-1.5">
                   Mobile Number
                 </label>
-                <div className="relative flex items-center">
-                  <div className="absolute left-3.5 flex items-center gap-1.5 text-xs font-bold text-charcoal-900 pointer-events-none border-r border-cream-200 pr-2.5">
-                    <span className="text-sm">🇮🇳</span>
-                    <span>+91</span>
+                <div className="flex items-center rounded-2xl border border-cream-300 bg-cream-50/60 focus-within:bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all shadow-2xs overflow-hidden">
+                  {/* Dedicated Country Code Prefix Box */}
+                  <div className="flex items-center gap-1.5 px-3.5 py-3 text-xs font-bold text-charcoal-900 border-r border-cream-200 bg-cream-100/70 select-none shrink-0">
+                    <span className="text-base leading-none" role="img" aria-label="India">🇮🇳</span>
+                    <span className="tracking-wide">+91</span>
                   </div>
+
+                  {/* Clean 10-Digit Mobile Input */}
                   <input
+                    id="phone-input"
                     type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     required
                     maxLength={10}
                     value={phoneInput}
-                    onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ''))}
-                    placeholder="98765 43210"
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    placeholder="Enter 10-digit number"
                     autoFocus
-                    className="w-full pl-22 pr-4 py-3 rounded-2xl border border-cream-300 bg-cream-50/60 focus:bg-white text-sm font-semibold tracking-wider text-charcoal-900 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-1.5 focus:ring-brand-500 transition-all shadow-2xs"
+                    className="w-full px-3.5 py-3 bg-transparent text-sm sm:text-base font-semibold tracking-wider text-charcoal-900 placeholder:text-gray-400 placeholder:font-normal focus:outline-none"
                   />
+
+                  {/* Optional Clear Button */}
+                  {phoneInput && (
+                    <button
+                      type="button"
+                      onClick={() => setPhoneInput('')}
+                      className="p-2.5 mr-1 text-gray-400 hover:text-charcoal-900 transition-colors shrink-0"
+                      aria-label="Clear mobile number"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">
-                  10-digit Indian number without 0 or +91
+                <p className="text-[11px] text-gray-400 mt-1.5">
+                  Enter 10-digit Indian number without 0 or +91
                 </p>
               </div>
 
@@ -336,7 +366,9 @@ export default function Account() {
               <div className="flex items-center justify-between p-3 rounded-2xl bg-cream-50 border border-cream-200 text-xs">
                 <div className="flex items-center gap-2 text-charcoal-900 font-semibold">
                   <Phone className="w-3.5 h-3.5 text-brand-500" />
-                  <span>+91 {phoneInput.replace(/\D/g, '').slice(-10)}</span>
+                  <span>
+                    +91 {phoneInput.replace(/\D/g, '').slice(-10).replace(/(\d{5})(\d{5})/, '$1 $2')}
+                  </span>
                 </div>
                 <button
                   type="button"
@@ -362,7 +394,7 @@ export default function Account() {
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
                     placeholder="e.g. Moumita Mukherjee"
-                    className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50/60 focus:bg-white text-xs font-medium text-charcoal-900 focus:outline-none focus:ring-1.5 focus:ring-brand-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50/60 focus:bg-white text-xs font-medium text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                   />
                 </div>
               )}
@@ -373,14 +405,16 @@ export default function Account() {
                   Enter 6-Digit OTP
                 </label>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   maxLength={6}
                   required
                   value={otpInput}
-                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="• • • • • •"
                   autoFocus
-                  className="w-full text-center py-3 text-lg font-mono font-bold tracking-[0.5em] rounded-2xl border border-cream-300 bg-white focus:outline-none focus:ring-1.5 focus:ring-brand-500 text-charcoal-900 shadow-2xs"
+                  className="w-full text-center py-3 text-lg font-mono font-bold tracking-[0.5em] rounded-2xl border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-charcoal-900 shadow-2xs"
                 />
               </div>
 

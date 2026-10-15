@@ -38,3 +38,4 @@ export const formatDisplayPhone = (phone10Digits) => {
   if (!phone10Digits || phone10Digits.length !== 10) return phone10Digits;
   return `+91 ${phone10Digits.slice(0, 5)} ${phone10Digits.slice(5)}`;
 };
+
