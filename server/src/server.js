@@ -24,23 +24,69 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Security Headers
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
+
+// Helper to check if an origin is a local network / private IP address (LAN, Wi-Fi, hotspot, mDNS)
+const isLocalOrPrivateOrigin = (origin) => {
+  try {
+    const { hostname } = new URL(origin);
+    // Localhost, Loopback, mDNS
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.endsWith('.local')
+    ) {
+      return true;
+    }
+    // RFC 1918 Private IP Ranges & Hotspots:
+    // 10.0.0.0/8, 172.16.0.0 - 172.31.255.255 (plus all 172.x subnets), 192.168.0.0/16
+    if (
+      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+      /^172\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname)
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+};
 
 // CORS Configuration (Allow frontend & handle credentials for httpOnly cookies)
+const configuredOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((u) => u.trim())
+  : [];
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  process.env.CLIENT_URL,
+  ...configuredOrigins,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+      // Allow requests with no origin (like mobile apps, curl, server-to-server)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      // Allow configured origins, Vercel deployments, or local/LAN IPs for testing
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        isLocalOrPrivateOrigin(origin)
+      ) {
+        return callback(null, true);
+      }
+
+      console.warn(`[CORS Blocked]: Origin ${origin} not allowed`);
+      return callback(new Error(`Not allowed by CORS: ${origin}`));
     },
     credentials: true,
   })
