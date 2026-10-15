@@ -42,3 +42,4 @@ describe('Unique Order Number Generation Tests', () => {
     Order.exists.mockRestore();
   });
 });
+

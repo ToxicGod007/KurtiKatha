@@ -5,6 +5,7 @@ import { getRazorpayClient } from '../config/razorpay.js';
 import { calculateOrderPricing } from '../services/pricingService.js';
 import { decrementStock, restoreStock } from '../services/stockService.js';
 import { sendOrderConfirmationEmail } from '../services/emailService.js';
+import { sendTelegramNewOrderAlert, sendTelegramPaymentAlert } from '../services/telegramService.js';
 
 /**
  * Generate a unique human-readable order number guaranteed against collisions.
@@ -94,8 +95,9 @@ export const createCheckoutOrder = async (req, res, next) => {
 
       // Atomically decrement stock
       await decrementStock(verifiedItems);
-      // Send confirmation email
+      // Send confirmation email & real-time Telegram admin alert
       sendOrderConfirmationEmail(order);
+      sendTelegramNewOrderAlert(order);
 
       return res.status(201).json({
         success: true,
@@ -208,6 +210,7 @@ export const verifyPayment = async (req, res, next) => {
     await order.save();
     await decrementStock(order.items);
     sendOrderConfirmationEmail(order);
+    sendTelegramNewOrderAlert(order);
 
     res.status(200).json({
       success: true,
@@ -264,6 +267,7 @@ export const handleWebhook = async (req, res) => {
         await order.save();
         await decrementStock(order.items);
         sendOrderConfirmationEmail(order);
+        sendTelegramNewOrderAlert(order);
       }
     } else if (event === 'payment.failed') {
       const rzpPayment = payload.payload.payment.entity;
@@ -278,6 +282,13 @@ export const handleWebhook = async (req, res) => {
           updatedBy: 'razorpay_webhook',
         });
         await order.save();
+        sendTelegramPaymentAlert({
+          orderNumber: order.orderNumber,
+          amount: order.amounts.total,
+          method: 'Razorpay',
+          status: 'Payment Failed',
+          note: rzpPayment.error_description || 'Card/UPI failed',
+        });
       }
     } else if (event === 'refund.processed') {
       const rzpRefund = payload.payload.refund.entity;
@@ -294,6 +305,13 @@ export const handleWebhook = async (req, res) => {
         });
         await order.save();
         await restoreStock(order.items);
+        sendTelegramPaymentAlert({
+          orderNumber: order.orderNumber,
+          amount: (rzpRefund.amount || 0) / 100,
+          method: 'Razorpay Refund',
+          status: 'Refund Processed',
+          note: `Refund ID: ${rzpRefund.id}`,
+        });
       }
     }
 

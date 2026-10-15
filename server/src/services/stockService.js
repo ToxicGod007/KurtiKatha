@@ -1,4 +1,5 @@
 import { Product } from '../models/Product.js';
+import { sendTelegramLowStockAlert } from './telegramService.js';
 
 export async function decrementStock(items) {
   for (const item of items) {
@@ -6,7 +7,7 @@ export async function decrementStock(items) {
     const qty = item.quantity;
     const productId = item.product?._id || item.product;
 
-    const result = await Product.updateOne(
+    const updatedProduct = await Product.findOneAndUpdate(
       {
         _id: productId,
         'variants.size': size,
@@ -14,11 +15,17 @@ export async function decrementStock(items) {
       },
       {
         $inc: { 'variants.$.stock': -qty },
-      }
+      },
+      { new: true }
     );
 
-    if (result.matchedCount === 0 || result.modifiedCount === 0) {
+    if (!updatedProduct) {
       console.warn(`[Stock Warning] Failed to atomically decrement stock for product ${productId}, size ${size}`);
+    } else {
+      const variant = updatedProduct.variants?.find((v) => v.size === size);
+      if (variant && variant.stock <= 5) {
+        sendTelegramLowStockAlert(updatedProduct.title, size, variant.stock);
+      }
     }
   }
 }

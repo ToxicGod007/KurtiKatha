@@ -17,6 +17,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import { autoExpirePendingOrders } from './controllers/paymentController.js';
+import { startTelegramPolling, stopTelegramPolling } from './services/telegramService.js';
 
 dotenv.config();
 
@@ -164,12 +165,28 @@ app.use((err, req, res, next) => {
 // Start Server if not imported by tests
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`[KurtiKatha Server] Running on http://localhost:${PORT}`);
+    // Start Telegram Bot long polling for admin alerts & commands
+    startTelegramPolling();
   });
 
   // Background job to clean up stale pending orders every 10 minutes
-  setInterval(autoExpirePendingOrders, 10 * 60 * 1000);
+  const orderCleanupInterval = setInterval(autoExpirePendingOrders, 10 * 60 * 1000);
+
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('[KurtiKatha Server] Shutting down gracefully...');
+    clearInterval(orderCleanupInterval);
+    stopTelegramPolling();
+    server.close(() => {
+      console.log('[KurtiKatha Server] Closed out remaining connections.');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 export default app;
