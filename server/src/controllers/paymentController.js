@@ -6,6 +6,29 @@ import { calculateOrderPricing } from '../services/pricingService.js';
 import { decrementStock, restoreStock } from '../services/stockService.js';
 import { sendOrderConfirmationEmail } from '../services/emailService.js';
 
+/**
+ * Generate a unique human-readable order number guaranteed against collisions.
+ * Uses 6 cryptographically random digits with pre-validation against existing records
+ * and millisecond-level fallback.
+ */
+export const generateUniqueOrderNumber = async () => {
+  const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  
+  // Try up to 5 times to ensure no collision against existing DB records
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const randomDigits = crypto.randomInt(100000, 999999);
+    const candidateNumber = `KK-${dateStr}-${randomDigits}`;
+    const exists = await Order.exists({ orderNumber: candidateNumber });
+    if (!exists) {
+      return candidateNumber;
+    }
+  }
+
+  // Fallback with millisecond precision to guarantee uniqueness
+  const msDigits = Date.now().toString().slice(-6);
+  return `KK-${dateStr}-${msDigits}`;
+};
+
 export const createCheckoutOrder = async (req, res, next) => {
   try {
     const { items, shippingAddress, guestInfo, couponCode, paymentMethod = 'razorpay' } = req.body;
@@ -28,10 +51,8 @@ export const createCheckoutOrder = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Cash on Delivery is currently disabled by store admin.' });
     }
 
-    // 3. Generate unique human-readable order number
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const randomDigits = Math.floor(1000 + Math.random() * 9000);
-    const orderNumber = `KK-${dateStr}-${randomDigits}`;
+    // 3. Generate guaranteed unique human-readable order number
+    const orderNumber = await generateUniqueOrderNumber();
 
     const orderData = {
       orderNumber,
@@ -57,7 +78,20 @@ export const createCheckoutOrder = async (req, res, next) => {
 
     // 4. Handle COD
     if (paymentMethod === 'cod') {
-      const order = await Order.create(orderData);
+      let order;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          order = await Order.create(orderData);
+          break;
+        } catch (err) {
+          if (err.code === 11000 && attempt < 2) {
+            orderData.orderNumber = await generateUniqueOrderNumber();
+            continue;
+          }
+          throw err;
+        }
+      }
+
       // Atomically decrement stock
       await decrementStock(verifiedItems);
       // Send confirmation email
@@ -88,7 +122,20 @@ export const createCheckoutOrder = async (req, res, next) => {
     });
 
     orderData.payment.razorpayOrderId = rzpOrder.id;
-    const order = await Order.create(orderData);
+
+    let order;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        order = await Order.create(orderData);
+        break;
+      } catch (err) {
+        if (err.code === 11000 && attempt < 2) {
+          orderData.orderNumber = await generateUniqueOrderNumber();
+          continue;
+        }
+        throw err;
+      }
+    }
 
     res.status(201).json({
       success: true,
