@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon -e js,mjs,cjs,json,env src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --detectOpenHandles"
