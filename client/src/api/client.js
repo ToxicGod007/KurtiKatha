@@ -67,6 +67,21 @@ export const api = {
     }),
   getOrder: (id) => apiRequest(`/orders/${id}`),
   getMyOrders: () => apiRequest('/orders/my-orders'),
+  sendOtp: (phone) =>
+    apiRequest('/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify({ phone }),
+    }),
+  verifyOtp: (payload) =>
+    apiRequest('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  updateProfile: (data) =>
+    apiRequest('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
   login: (credentials) =>
     apiRequest('/auth/login', {
       method: 'POST',

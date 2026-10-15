@@ -14,10 +14,14 @@ const addressSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
-    phone: { type: String, required: true, trim: true },
-    passwordHash: { type: String, required: true },
+    name: { type: String, required: true, trim: true, default: 'Customer' },
+    email: { type: String, sparse: true, lowercase: true, trim: true, index: true },
+    phone: { type: String, required: true, unique: true, trim: true, index: true },
+    passwordHash: { type: String, default: '' },
+    otp: {
+      code: { type: String },
+      expiresAt: { type: Date },
+    },
     role: { type: String, enum: ['customer', 'admin'], default: 'customer', index: true },
     addresses: [addressSchema],
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
@@ -25,8 +29,9 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Method to verify password
+// Method to verify password (for admin or password-based accounts)
 userSchema.methods.comparePassword = async function (enteredPassword) {
+  if (!this.passwordHash) return false;
   return bcrypt.compare(enteredPassword, this.passwordHash);
 };
 
